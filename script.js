@@ -23,8 +23,9 @@ $("#formMot").on("submit", function(){
     var mot = $('#inputMot').val();
 
     $.ajax({
-        url:'nique.freeboxos.fr:6969/ajax-validate-word',
+        url:'http://nique.freeboxos.fr:6969/ajax-validate-word',
         type:'POST',
+        dataType:'jsonp',
         data: {
             mot:mot
         },
@@ -83,8 +84,9 @@ function getWordLength(){
 
     var longueur;
     $.ajax({
-        url:'nique.freeboxos.fr:6969/ajax-word-length',
+        url:'http://nique.freeboxos.fr:6969/ajax-word-length',
         method:'POST',
+        dataType:'jsonp',
         async:false,
         contentType:"application/JSON",    
         success:function(res){
@@ -102,8 +104,9 @@ function getWordLength(){
 function checkForWordChange(){
 
     $.ajax({
-        url:'nique.freeboxos.fr:6969/ajax-word-length',
+        url:'http://nique.freeboxos.fr:6969/ajax-word-length',
         method:'POST',
+        dataType:'jsonp',
         contentType:"application/JSON",    
         success:function(res){
             console.log("longueur check : ",res.longueur);
@@ -124,8 +127,9 @@ function getFirstLetter(){
     var lettre;
 
     $.ajax({
-        url:'nique.freeboxos.fr:6969/ajax-first-letter',
+        url:'http://nique.freeboxos.fr:6969/ajax-first-letter',
         method:'POST',
+        dataType:'jsonp',
         async:false,
         contentType:"application/JSON",    
         success:function(res){
