@@ -1,0 +1,85 @@
+.essai
+{ 
+    animation-duration: 1s;
+    animation-name:fadeInWithSlide;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+}
+
+.success
+{
+    border: 1px solid rgba(var(--bs-success-rgb),1);
+    border-radius: 2rem;
+    animation-name:fadeInBorder;
+    animation-duration:0.5s;
+    animation-fill-mode: both;
+    animation-delay:1.5s;
+    animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+}
+
+.felicitations
+{
+    border: 1px solid rgba(var(--bs-success-rgb),1);
+    border-radius: 2rem;
+    animation-duration: 1s;
+    animation-name:fadeIn;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+}
+
+.error
+{
+    border: 1px solid rgba(var(--bs-warning-rgb),1);
+    border-radius: 2rem;
+    animation:fadeIn 0.5s cubic-bezier(0.37, 0, 0.63, 1) 0s 1 forwards, fadeOut 0.5s cubic-bezier(0.37, 0, 0.63, 1) 4s 1 forwards 
+}
+
+.banned
+{
+    border: 1px solid rgba(var(--bs-danger-rgb),1);
+    border-radius: 2rem;
+    animation:fadeIn 0.5s cubic-bezier(0.37, 0, 0.63, 1) 0s 1 forwards;
+}
+
+@keyframes fadeInWithSlide {
+    from
+    {
+        transform:translateY(-20%);
+        opacity: 0%;
+    }
+}
+
+@keyframes fadeInBorder {
+    from
+    {
+        border-color:rgba(var(--bs-success-rgb),0)
+    }
+}
+
+@keyframes fadeIn {
+
+    from {
+        opacity:0%;
+    }
+
+    to {
+        opacity:100%;
+    }
+    
+}
+
+
+@keyframes fadeOut {
+
+    from {
+        opacity:100%;
+    }
+
+    to {
+        opacity:0%;
+    }
+    
+}
+
+
+
