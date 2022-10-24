@@ -1,117 +1,116 @@
-
-const LONGUEUR = getWordLength();
-
-const FIRST_LETTER = getFirstLetter();
-
-let nombreTentatives = 0;
+var nombreTentatives = 0;
 
 var lengthCheck = setInterval(checkForWordChange, 10000);
 
-$("#inputMot").prop("pattern",".{"+LONGUEUR+"}")
-
-$("#inputMot").prop("title","Le mot doit être long de "+LONGUEUR+" caractères.")
-
-$("#nombreCaracteres").text(LONGUEUR);
-
-$("#premiereLettre").text(FIRST_LETTER);
-
-$("#formMot").on("submit", function(){
-
-
-    event.preventDefault();
-
-    var mot = $('#inputMot').val();
-
-    $.ajax({
-        url:'https://nique.freeboxos.fr/ajax-validate-word',
-        type:'POST',
-        jsonp:"callback",
-        dataType:'jsonp',
-        data: {
-            mot:mot,
-        },
-        success: async function(res){
-
-            //console.log(res)
-
-            console.log(res.result)
-
-            $("#inputMot").val(""); // Vide le textfield et remet l'initiale
-
-            if(res.result === "notFound")
-            {
-                console.log("erreur")
-
-                $("#affichageErreur").html(`
-                <div class='error col-md-6 col-sm-8 mt-4 mb-2 d-flex flex-column align-items-center text-center' id='divErreur'>
-                    <p class="fs-4 text-warning mt-2 mb-2 mx-4 fw-light">Ce mot n'est pas dans la liste :/</p>
-                </div>
-                `);
-
-                let wait = await(setTimeout(function(){$("#affichageErreur").empty();},7000))
-            }
-
-            else
-            {
-                affichageResultats(LONGUEUR,mot,res.result)
-
-                console.log(nombreTentatives)
+var LONGUEUR = getWordLength().then(function(data){
     
-                if(res.result === "success")
-                {
-                    $("#tentative:last-child").addClass("success");
+    LONGUEUR = data.longueur
 
-                    await(setTimeout(function(){
+    $("#nombreCaracteres").text(LONGUEUR);
 
-                        $("#btnValider").text("Bravo !").removeClass("btn-primary").addClass("btn-success").prop("disabled",true);
+    $("#inputMot").prop("pattern",".{"+LONGUEUR+"}")
+
+
+    var FIRST_LETTER = getFirstLetter().then(function(data){
+
+        FIRST_LETTER = data.firstLetter;
+
+        $("#inputMot").prop("title","Le mot doit être long de "+LONGUEUR+" caractères.")
+    
+        $("#premiereLettre").text(FIRST_LETTER);
+
+        $("#formMot").on("submit", function(){
+
+            event.preventDefault();
         
-                        $("#affichage").append(`
-                        <div class='felicitations col-md-6 col-sm-8 mt-4 mb-2 px-4 d-flex flex-column align-items-center text-center' id='félicitations'>
-                            <p class="fs-2 text-success mt-2 mb-2 fw-light btn-outline-success">Félicitations !</p>
-                            <p class="fs-4 text-light fw-light">Vous avez trouvé le mot : ${mot} en <span class="fw-bold">${nombreTentatives}</span> tentatives !</p>
-                            <p class="fs-4 text-light fw-light">Revenez demain pour essayer avec un nouveau mot ! :3</p>
+            var mot = $('#inputMot').val();
+        
+            $.ajax({
+                url:'https://nique.freeboxos.fr/ajax-validate-word',
+                crossDomain:true,
+                type:'POST',
+                dataType:'json',
+                data: {
+                    mot:mot,
+                },
+                success: async function(res){
+        
+                    //console.log(res)
+        
+                    console.log(res.result)
+        
+                    $("#inputMot").val(""); // Vide le textfield et remet l'initiale
+        
+                    if(res.result === "notFound")
+                    {
+                        console.log("erreur")
+        
+                        $("#affichageErreur").html(`
+                        <div class='error col-md-6 col-sm-8 mt-4 mb-2 d-flex flex-column align-items-center text-center' id='divErreur'>
+                            <p class="fs-4 text-warning mt-2 mb-2 mx-4 fw-light">Ce mot n'est pas dans la liste :/</p>
                         </div>
                         `);
-
-                    },3000))
-                }    
-            }
-
-        },
-        error:function(xhr){
-            errorHandler(xhr)
-        }
+        
+                        let wait = await(setTimeout(function(){$("#affichageErreur").empty();},7000))
+                    }
+        
+                    else
+                    {
+                        affichageResultats(LONGUEUR,mot,res.result)
+        
+                        console.log(nombreTentatives)
+            
+                        if(res.result === "success")
+                        {
+                            $("#tentative:last-child").addClass("success");
+        
+                            await(setTimeout(function(){
+        
+                                $("#btnValider").text("Bravo !").removeClass("btn-primary").addClass("btn-success").prop("disabled",true);
+                
+                                $("#affichage").append(`
+                                <div class='felicitations col-md-6 col-sm-8 mt-4 mb-2 px-4 d-flex flex-column align-items-center text-center' id='félicitations'>
+                                    <p class="fs-2 text-success mt-2 mb-2 fw-light btn-outline-success">Félicitations !</p>
+                                    <p class="fs-4 text-light fw-light">Vous avez trouvé le mot : ${mot} en <span class="fw-bold">${nombreTentatives}</span> tentatives !</p>
+                                    <p class="fs-4 text-light fw-light">Revenez demain pour essayer avec un nouveau mot ! :3</p>
+                                </div>
+                                `);
+        
+                            },3000))
+                        }    
+                    }
+        
+                },
+                error:function(xhr){
+                    errorHandler(xhr)
+                }
+            });
+        })
+    
     });
-})
+});
 
-function getWordLength(){
+async function getWordLength(){
 
-    var longueur;
-    $.ajax({
+    return $.ajax({
         url:'https://nique.freeboxos.fr/ajax-word-length',
-        method:'POST',
+        method:'GET',
         dataType:'jsonp',
-        async:false,
         contentType:"application/JSON",    
         success:function(res){
-            console.log("longueur : ",res.longueur);
-            longueur = res.longueur; 
-
-            console.log(res)
+            result = res;
         },
         error:function(xhr){
             errorHandler(xhr)
         }
     });
-
-    return(longueur)
-};
+}
 
 function checkForWordChange(){
 
     $.ajax({
         url:'https://nique.freeboxos.fr:443/ajax-word-length',
-        method:'POST',
+        method:'GET',
         dataType:'jsonp',
         contentType:"application/JSON",    
         success:function(res){
@@ -130,28 +129,21 @@ function checkForWordChange(){
     });
 };
 
-function getFirstLetter(){
+async function getFirstLetter(){
 
-    var lettre;
-
-    $.ajax({
-        url:'https://nique.freeboxos.fr:443/ajax-first-letter',
-        method:'POST',
+    return $.ajax({
+        url:'https://nique.freeboxos.fr/ajax-first-letter',
+        method:'GET',
         dataType:'jsonp',
         async:false,
+        contentType:"application/JSON",    
         success:function(res){
-
-            lettre = res.firstLetter;
-
-            console.log(res)
+            result = res
         },
         error:function(xhr){
             errorHandler(xhr)
         }
     });
-
-    //console.log("lettre:",lettre)
-    return lettre;
 };
 
 function affichageResultats(len,mot,difference)
