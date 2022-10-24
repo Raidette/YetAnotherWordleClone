@@ -171,7 +171,7 @@ function affichageResultats(len,mot,difference)
 
 function errorHandler(xhr)
 {
-    if(xhr.status == 420)
+    if(xhr.status == 429)
     {
         if(!$("#divErreur").length)
         {
