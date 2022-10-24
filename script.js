@@ -110,7 +110,7 @@ function getWordLength(){
 function checkForWordChange(){
 
     $.ajax({
-        url:'https://nique.freeboxos.fr/ajax-word-length',
+        url:'https://nique.freeboxos.fr:443/ajax-word-length',
         method:'POST',
         dataType:'jsonp',
         contentType:"application/JSON",    
@@ -135,7 +135,7 @@ function getFirstLetter(){
     var lettre;
 
     $.ajax({
-        url:'https://nique.freeboxos.fr/ajax-first-letter',
+        url:'https://nique.freeboxos.fr:443/ajax-first-letter',
         method:'POST',
         dataType:'jsonp',
         async:false,
