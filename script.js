@@ -90,7 +90,6 @@ function getWordLength(){
     $.ajax({
         url:'https://nique.freeboxos.fr/ajax-word-length',
         method:'POST',
-        jsonp:"callback",
         dataType:'jsonp',
         async:false,
         contentType:"application/JSON",    
@@ -113,7 +112,6 @@ function checkForWordChange(){
     $.ajax({
         url:'https://nique.freeboxos.fr/ajax-word-length',
         method:'POST',
-        jsonp:"callback",
         dataType:'jsonp',
         contentType:"application/JSON",    
         success:function(res){
