@@ -23,13 +23,16 @@ $("#formMot").on("submit", function(){
     var mot = $('#inputMot').val();
 
     $.ajax({
-        url:'http://nique.freeboxos.fr:6969/ajax-validate-word',
+        url:'https://nique.freeboxos.fr/ajax-validate-word',
         type:'POST',
+        jsonp:"callback",
         dataType:'jsonp',
         data: {
-            mot:mot
+            mot:mot,
         },
         success: async function(res){
+
+            //console.log(res)
 
             console.log(res.result)
 
@@ -73,6 +76,7 @@ $("#formMot").on("submit", function(){
                     },3000))
                 }    
             }
+
         },
         error:function(xhr){
             errorHandler(xhr)
@@ -84,14 +88,17 @@ function getWordLength(){
 
     var longueur;
     $.ajax({
-        url:'http://nique.freeboxos.fr:6969/ajax-word-length',
+        url:'https://nique.freeboxos.fr/ajax-word-length',
         method:'POST',
+        jsonp:"callback",
         dataType:'jsonp',
         async:false,
         contentType:"application/JSON",    
         success:function(res){
             console.log("longueur : ",res.longueur);
-            longueur = res.longueur;
+            longueur = res.longueur; 
+
+            console.log(res)
         },
         error:function(xhr){
             errorHandler(xhr)
@@ -104,8 +111,9 @@ function getWordLength(){
 function checkForWordChange(){
 
     $.ajax({
-        url:'http://nique.freeboxos.fr:6969/ajax-word-length',
+        url:'https://nique.freeboxos.fr/ajax-word-length',
         method:'POST',
+        jsonp:"callback",
         dataType:'jsonp',
         contentType:"application/JSON",    
         success:function(res){
@@ -115,6 +123,8 @@ function checkForWordChange(){
             {
                 window.location.reload();
             }
+
+            console.log(res)
         },
         error:function(xhr){
             errorHandler(xhr)
@@ -127,16 +137,15 @@ function getFirstLetter(){
     var lettre;
 
     $.ajax({
-        url:'http://nique.freeboxos.fr:6969/ajax-first-letter',
+        url:'https://nique.freeboxos.fr/ajax-first-letter',
         method:'POST',
         dataType:'jsonp',
         async:false,
-        contentType:"application/JSON",    
         success:function(res){
 
             lettre = res.firstLetter;
 
-            console.log(res.firstLetter)
+            console.log(res)
         },
         error:function(xhr){
             errorHandler(xhr)
@@ -172,7 +181,7 @@ function affichageResultats(len,mot,difference)
 
 function errorHandler(xhr)
 {
-    if(xhr.status)
+    if(xhr.status == 420)
     {
         if(!$("#divErreur").length)
         {
