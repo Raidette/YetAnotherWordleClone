@@ -63,11 +63,11 @@ var LONGUEUR = getWordLength().then(function(data){
                         if(res.result === "success")
                         {
                             $("#tentative:last-child").addClass("success");
+
+                            $("#btnValider").text("Bravo !").removeClass("btn-primary").addClass("btn-success").prop("disabled",true);
         
                             await(setTimeout(function(){
-        
-                                $("#btnValider").text("Bravo !").removeClass("btn-primary").addClass("btn-success").prop("disabled",true);
-                
+                        
                                 $("#affichage").append(`
                                 <div class='felicitations col-md-6 col-sm-8 mt-4 mb-2 px-4 d-flex flex-column align-items-center text-center' id='félicitations'>
                                     <p class="fs-2 text-success mt-2 mb-2 fw-light btn-outline-success">Félicitations !</p>
@@ -108,25 +108,33 @@ async function getWordLength(){
 
 function checkForWordChange(){
 
-    $.ajax({
-        url:'https://nique.freeboxos.fr:443/ajax-word-length',
-        method:'GET',
-        dataType:'jsonp',
-        contentType:"application/JSON",    
-        success:function(res){
-            console.log("longueur check : ",res.longueur);
+    try
+    {
+        $.ajax({
+            url:'https://nique.freeboxos.fr/ajax-word-length',
+            method:'GET',
+            dataType:'jsonp',
+            crossDomain:true,
+            contentType:"application/JSON",    
+            success:function(res){
+                console.log("longueur check : ",res.longueur);
 
-            if(LONGUEUR != res.longueur)
-            {
-                window.location.reload();
+                if(LONGUEUR != res.longueur)
+                {
+                    window.location.reload();
+                }
+
+                console.log(res)
+            },
+            error:function(xhr){
+                errorHandler(xhr)
             }
-
-            console.log(res)
-        },
-        error:function(xhr){
-            errorHandler(xhr)
-        }
-    });
+        });
+    }
+    catch(xhr)
+    {
+        errorHandler(xhr)
+    }
 };
 
 async function getFirstLetter(){
@@ -171,10 +179,12 @@ function affichageResultats(len,mot,difference)
 
 function errorHandler(xhr)
 {
+    console.log(xhr)
     if(xhr.status == 429)
     {
-        if(!$("#divErreur").length)
+        if($("#affichageErreur").length == 1)
         {
+            console.log("inside")
             $("#affichageErreur").html(`
             <div class='banned col-md-6 col-sm-8 mt-4 mb-2 d-flex flex-column align-items-center text-center' id='divErreur'>
                 <p class="fs-4 text-danger mt-2 mb-2 mx-4 fw-light">Suite à un trop grand nombres de requêtes, votre IP à été bannie pour une heure.</p>
