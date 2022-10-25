@@ -1,5 +1,7 @@
 var nombreTentatives = 0;
 
+var historiqueTentatives = [];
+
 var lengthCheck = setInterval(checkForWordChange, 10000);
 
 var LONGUEUR = getWordLength().then(function(data){
@@ -8,8 +10,9 @@ var LONGUEUR = getWordLength().then(function(data){
 
     $("#nombreCaracteres").text(LONGUEUR);
 
-    $("#inputMot").prop("pattern",".{"+LONGUEUR+"}")
+    $("#nombreTentativesRestantes").text("7");
 
+    $("#inputMot").prop("pattern",".{"+LONGUEUR+"}")
 
     var FIRST_LETTER = getFirstLetter().then(function(data){
 
@@ -67,19 +70,44 @@ var LONGUEUR = getWordLength().then(function(data){
                             $("#btnValider").text("Bravo !").removeClass("btn-primary").addClass("btn-success").prop("disabled",true);
         
                             await(setTimeout(function(){
+
+                                var emojisTentatives = generateShareString(historiqueTentatives);
+
+                                console.log(emojisTentatives)
                         
                                 $("#affichage").append(`
                                 <div class='felicitations col-md-6 col-sm-8 mt-4 mb-2 px-4 d-flex flex-column align-items-center text-center' id='félicitations'>
                                     <p class="fs-2 text-success mt-2 mb-2 fw-light btn-outline-success">Félicitations !</p>
                                     <p class="fs-4 text-light fw-light">Vous avez trouvé le mot : ${mot} en <span class="fw-bold">${nombreTentatives}</span> tentatives !</p>
                                     <p class="fs-4 text-light fw-light">Revenez demain pour essayer avec un nouveau mot ! :3</p>
+                                    <a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=${emojisTentatives.toString()}" data-size="large"><button class="btn btn-outline-primary mb-2">Tweeter !</button></a>
                                 </div>
                                 `);
         
                             },3000))
+                        }
+                        else if(nombreTentatives >= 7)
+                        {
+                            $("#btnValider").text("Dommage :/").removeClass("btn-primary").addClass("btn-danger").prop("disabled",true);
+        
+                            setTimeout(function(){
+
+                                var shareString = generateShareString(historiqueTentatives);
+
+                                console.log("sharestring: ",shareString.toString().replace(",","%0a"))
+                        
+                                $("#affichage").append(`
+                                <div class='banned col-md-6 col-sm-8 mt-4 mb-3 px-4 d-flex flex-column align-items-center text-center' id='dommage'>
+                                    <p class="fs-2 text-danger mt-2 mb-2 fw-light btn-outline-danger">Dommage !</p>
+                                    <p class="fs-4 text-light fw-light">Vous n'avez pas réussi à trouver le mot...</p>
+                                    <p class="fs-4 text-light fw-light">Revenez demain pour essayer avec un nouveau mot, vous aurez peut-être plus de chance ! :3</p>
+                                    <a class="twitter-share-button" href="https://twitter.com/intent/tweet?text=${shareString.toString().replace(",","%0a")}" data-size="large"><button class="btn btn-outline-primary mb-2">Tweeter !</button></a>
+                                </div>
+                                `);
+        
+                            },1000)
                         }    
                     }
-        
                 },
                 error:function(xhr){
                     errorHandler(xhr)
@@ -159,6 +187,10 @@ function affichageResultats(len,mot,difference)
 
     nombreTentatives+=1;
 
+    $('#nombreTentativesRestantes').text(7-nombreTentatives);
+
+    historiqueTentatives.push(difference);
+
     let finalString = "";
     let classe = ""
 
@@ -187,11 +219,65 @@ function errorHandler(xhr)
             console.log("inside")
             $("#affichageErreur").html(`
             <div class='banned col-md-6 col-sm-8 mt-4 mb-2 d-flex flex-column align-items-center text-center' id='divErreur'>
-                <p class="fs-4 text-danger mt-2 mb-2 mx-4 fw-light">Suite à un trop grand nombres de requêtes, votre IP à été bannie pour une heure.</p>
+                <p class="fs-4 text-danger mt-2 mb-2 mx-4 fw-light">Suite à un trop grand nombres de requêtes, votre IP à été bannie pour une minute.</p>
             </div>
             `);    
         }
     }
+}
+
+function generateShareString(histo)
+{
+
+    let date = new Date(Date.now())
+    let final = "";
+
+    if(nombreTentatives >= 7)
+    {
+        nombreTentatives = String.fromCodePoint(128532) // Pensive face
+    }
+
+    final +=(`Mot du ${date.getDate()}-${date.getMonth()}-${date.getFullYear()} %7C ${nombreTentatives}%2f7%0a%0a`)
+
+    for(i=0;i<histo.length;i++)
+    {
+        var tentative = histo[i];
+        
+        var ligne = ""
+
+        if(tentative === "success")
+        {
+            ligne += String.fromCodePoint(128994).repeat(LONGUEUR) // Rond vert sur toute la longueur
+        }
+        else
+        {
+            for(x=0;x<tentative.length;x++)
+            {
+                var lettre = tentative[x];
+
+                if(lettre === "_")
+                {
+                    ligne += String.fromCodePoint(128308) // Rond rouge
+                }
+                else if(lettre === "*")
+                (
+                    ligne += String.fromCodePoint(128992) // Rond orange
+                )
+                else
+                {
+                    ligne += String.fromCodePoint(128994) // Rond vert
+                }
+            }
+    
+        }
+        final += ligne+"%0a";
+    }
+
+
+    final += ('%0ahttps://raidette.github.io/YetAnotherWordleClone/%0a')
+
+    console.log("final :",final)
+    return final;
 }
 
 
